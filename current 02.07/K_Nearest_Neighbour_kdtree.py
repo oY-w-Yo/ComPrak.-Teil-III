@@ -48,7 +48,7 @@ class Kd_Node:
         return Stack
 
     def search_k_nearst_from_kd_node(self,Point,k):
-        Stack = []
+        Stack = [self]
         Stack.extend(self.stacking_from_kd_node(Point))
         k_Best = []
         distance_set = []
@@ -57,9 +57,9 @@ class Kd_Node:
             if current_node.position == AC.Position.Leaf:
                 local_k_best,local_distance_set = AF.k_closest_point(Point,current_node.Data,k)
                 k_Best,distance_set = AF.merge_two_k_best(k_Best,distance_set,local_k_best,local_distance_set,k)
-            if current_node.position == AC.Position.InsidePoint:
-                axis = current_node.parent.depth % dimension
-                if distance_set[-1] > abs(Point[axis] - current_node.parent.pivot[1][axis]):
+            else:
+                axis = current_node.depth % dimension
+                if distance_set[-1] > abs(Point[axis] - current_node.pivot[1][axis]):
                     Stack.extend(current_node.stacking_from_kd_node(Point))
         return k_Best,distance_set
 
