@@ -6,12 +6,12 @@ import timeit
 
 # squre of distance of two pure points
 def distance_sq(p1,p2):
-    #d = p1.dot(p1) - 2*np.dot(p1,p2) + np.dot(p2,p2)
-    #d = sum([(a-b)**2 for a,b in zip(p1,p2)])
-    d = 0
+    maxi = 0
     for a,b in zip(p1,p2):
-        d += (a-b)**2
-    return d
+        c = abs(a-b)
+        if c > maxi:
+            maxi = c
+    return maxi
 
 '''
 def distance_sq2(p1,p2):
@@ -39,19 +39,10 @@ def distance_sq_Ball(p,Ball_center,Ball_radius_sq):
  
 # special for the datastructure, we have data in form [label, vektor] in pSet
 def k_closest_point(Point,pSet,k):
-    pSet = sorted(pSet, key = lambda p: distance_sq(p[1],Point))
-    return pSet[:k]
-
-# special for the datastructure, we have data in form [label, vector] in orderedSet and newpoint
-# we assumed that the ordereSet already contain k_closest_point
-def insert_into_k_closest_point(p,orderdSet,newpoint):
-    d = distance_sq(p,newpoint[1])
-    for i in range(len(orderdSet)):
-        if d < distance_sq(p,orderdSet[-i][1]):
-            orderdSet.insert(-i,newpoint)
-            orderdSet.remove(orderdSet[-1])
-            break
-    return orderdSet
+    index_list = range(len(pSet)) 
+    distance_set = [distance_sq(p[1],Point) for p in pSet]
+    index_list = sorted(index_list, key = lambda i: distance_set[i])[:k]
+    return [pSet[i] for i in index_list],[distance_set[i] for i in index_list]
 
 # p is a pure vektor and every point in  pSet is in form [label, vektor]
 # the output is also in form [label, vektor]
@@ -82,10 +73,18 @@ def ErrorCal(func,TestSet):
     Error = Error/m
     return Error
 
-def evaluate(Point,k_best):
+def Error(Point,k_best):
     result = sum([p[0] for p in k_best])
     if result < 0:
         result = -1
     else:
         result = 1
     return result != Point[0]
+
+def point_error(Point,sum_label):
+    if sum_label < 0:
+        result = -1
+    else:
+        result = 1
+    return result != Point[0]
+

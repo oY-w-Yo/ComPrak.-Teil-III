@@ -21,7 +21,6 @@ def read_csv(name,Settype):
     return pointSet
 
 
-
 def write_csv(name,text):
     with open(name, 'w', newline='') as output_file:
         writer = csv.writer(output_file)

@@ -1,11 +1,15 @@
 import csv
+import os
 import numpy as np
 
 # Read the Data from 
 
 def read_csv(name,Settype):
+    THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
     File_csv = name + "." + Settype + ".csv"
-    with open('classification-artificial/'+File_csv) as File:
+    Path_csv = os.path.join(THIS_FOLDER, 'classification-artificial/',File_csv)
+    with open(Path_csv) as File:
+    #with open('classification-artificial/'+File_csv) as File:
         Data = csv.reader(File, delimiter=',')
         pointSet = []
         for point in Data:

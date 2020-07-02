@@ -13,7 +13,7 @@ start_time = time.time()
 KSET = range(1,51)
 l = 5
 k, f = classify_kd(name,KSET,l)
-print(k)
+print('k_star = ',k)
 mittel_time = time.time()
 testSet = read_csv(name,'test')
 E = ErrorCal(f,testSet)

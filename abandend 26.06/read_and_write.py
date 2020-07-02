@@ -1,6 +1,6 @@
 import csv
-import os
 import numpy as np
+import os
 
 # Read the Data from 
 
@@ -19,8 +19,7 @@ def read_csv(name,Settype):
             pointSet.append([ point[0], point[1:]])
     File.close()
     return pointSet
-
-
+    
 
 def write_csv(name,text):
     with open(name, 'w', newline='') as output_file:

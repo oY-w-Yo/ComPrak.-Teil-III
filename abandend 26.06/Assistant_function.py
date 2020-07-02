@@ -2,31 +2,28 @@ import numpy as np
 import math
 from random import choice
 import timeit
+import copy
 ######################## Define some useful help functions ###########################
 
 # squre of distance of two pure points
 def distance_sq(p1,p2):
-    #d = p1.dot(p1) - 2*np.dot(p1,p2) + np.dot(p2,p2)
-    #d = sum([(a-b)**2 for a,b in zip(p1,p2)])
     d = 0
     for a,b in zip(p1,p2):
-        d += (a-b)**2
+        c = abs(a-b)
+        if c > d:
+            d = c
     return d
 
-'''
-def distance_sq2(p1,p2):
-    #d = sum([(a-b)**2 for a,b in zip(p1,p2)])
-    #d = 0
-    #for a,b in zip(p1,p2):
-    #    d += (a-b)**2
-    dif = np.array(p1)-np.array(p2)
-    return np.dot(dif,dif)
+def test_dis():
+    test1 = 'p1 = [10,203,4,55,40,1,2,3,4,5,10,203,4,55,40,1,2,3,4,5];p2 = [20,40,120,40,1,3,4,5,6,7,10,203,4,55,40,1,2,3,4,5];distance_sq1(p1,p2)'
+    test2 = 'p1 = [10,203,4,55,40,1,2,3,4,5,10,203,4,55,40,1,2,3,4,5];p2 = [20,40,120,40,1,3,4,5,6,7,10,203,4,55,40,1,2,3,4,5];distance_sq2(p1,p2)'
+    #test3 = 'p1 = [10,203,4,55,40,1,2,3,4,5,10,203,4,55,40,1,2,3,4,5];p2 = [20,40,120,40,1,3,4,5,6,7,10,203,4,55,40,1,2,3,4,5];distance_sq3(p1,p2)'
+    print(timeit.timeit(test1,'from __main__ import distance_sq1',number=100000))
+    print(timeit.timeit(test2,'from __main__ import distance_sq2',number=100000))
+    #print(timeit.timeit(test3,'from __main__ import distance_sq3',number=100000))
 
-test1 = 'p1 = [10,203,4,55,40];p2 = [20,40,120,40,1];distance_sq(p1,p2)'
-test2 = 'p1 = [10,203,4,55,40];p2 = [20,40,120,40,1];distance_sq2(p1,p2)'
-print(timeit.timeit(test1,'from __main__ import distance_sq',number=100000))
-print(timeit.timeit(test2,'from __main__ import distance_sq2',number=100000))
-'''
+#test_dis()
+
 
 # d(p,Ball) = d(p,Ball_center) - Ball_radius
 # d(p,Ball)^2 = d(p,Ball_center)^2 + Ball_radius^2 - 2*d(p,Ball_center)*Ball_radius, also
@@ -38,9 +35,12 @@ def distance_sq_Ball(p,Ball_center,Ball_radius_sq):
     return d_sq
  
 # special for the datastructure, we have data in form [label, vektor] in pSet
+# Assumed there are no same point
 def k_closest_point(Point,pSet,k):
-    pSet = sorted(pSet, key = lambda p: distance_sq(p[1],Point))
-    return pSet[:k]
+    index_list = range(len(pSet)) 
+    distance_set = [distance_sq(pSet[i][1],Point) for i in index_list]
+    index_list = sorted(index_list, key = lambda i: distance_set[i])[:k]
+    return [pSet[i] for i in index_list],[distance_set[i] for i in index_list]
 
 # special for the datastructure, we have data in form [label, vector] in orderedSet and newpoint
 # we assumed that the ordereSet already contain k_closest_point
@@ -77,15 +77,24 @@ def projection(w,p):
 
 
 def ErrorCal(func,TestSet):
-    m = len(TestSet)
-    Error = sum([labeled_point[0] != func(labeled_point[1]) for labeled_point in TestSet])
-    Error = Error/m
+    #m = len(TestSet)
+    Error = np.mean([labeled_point[0] != func(labeled_point[1]) for labeled_point in TestSet])
+    #Error = Error/m
     return Error
 
-def evaluate(Point,k_best):
+# return 1, if 
+def Error(Point,k_best):
     result = sum([p[0] for p in k_best])
     if result < 0:
         result = -1
     else:
         result = 1
-    return result == Point[0]
+    return result != Point[0]
+
+def point_error(Point,sum_label):
+    if sum_label < 0:
+        result = -1
+    else:
+        result = 1
+    return result != Point[0]
+

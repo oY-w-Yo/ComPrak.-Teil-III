@@ -7,10 +7,11 @@ from Assistant_function import ErrorCal
 
 
 # Test with file
-name = 'bananas-1-4d'
-# name = 'toy-10d'
+name = 'bananas-1-2d'
+#name = 'bananas-1-4d'
+#name = 'toy-10d'
 start_time = time.time()
-KSET = range(1,51)
+KSET = range(1,11)
 l = 5
 k, f = classify_kd(name,KSET,l)
 print(k)
