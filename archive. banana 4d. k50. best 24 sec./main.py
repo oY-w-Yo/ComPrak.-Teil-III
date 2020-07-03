@@ -7,8 +7,8 @@ from Assistant_function import ErrorCal
 
 
 # Test with file
-name = 'bananas-1-4d'
-# name = 'toy-10d'
+#name = 'bananas-1-4d'
+name = 'toy-10d'
 start_time = time.time()
 KSET = range(1,51)
 l = 5

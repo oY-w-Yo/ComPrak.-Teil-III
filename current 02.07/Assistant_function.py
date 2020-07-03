@@ -1,7 +1,9 @@
 import numpy as np
+#import heapq as hp
 import math
 from   random import choice
 import timeit
+
 
 
 ######################## Define some useful help functions ###########################
@@ -45,6 +47,7 @@ def k_closest_point(Point,pSet,k):
     index_list = range(len(pSet)) 
     distance_set = [distance_sq(p[1],Point) for p in pSet]
     index_list = sorted(index_list, key = lambda i: distance_set[i])[:k]
+    #index_list = hp.nsmallest(k,index_list, key = lambda i: distance_set[i])
     return [pSet[i] for i in index_list],[distance_set[i] for i in index_list]
 
 # p is a pure vektor and every point in  pSet is in form [label, vektor]
@@ -94,8 +97,8 @@ def point_error(Point,sum_label):
 def merge_two_k_best(Set1,distance_set1,Set2,distance_set2,k):
     if Set1 == []:
         return Set2,distance_set2
-    if Set2 == []:
-        return Set1,distance_set1
+    #if Set2 == []:
+    #    return Set1,distance_set1
     if distance_set2[0] < distance_set1[-1]:
         temp_Best = Set1 + Set2
         temp_distance_set = distance_set1 + distance_set2

@@ -8,7 +8,7 @@ import copy
 
 class Kd_Node:
     def __init__(self, Data, depth = 0):
-        #self.position = position
+        self.position = None
         self.depth = depth
 
         self.Data = Data
@@ -69,7 +69,7 @@ def classify_kd (name,KSET,l):
     k_max = max(KSET)
 
     global Leafsize 
-    Leafsize = k_max*2
+    Leafsize = k_max*1.1
 
     # read the data
     trainSet = read_csv(name,"train")
@@ -79,7 +79,7 @@ def classify_kd (name,KSET,l):
     dimension = len(trainSet[0][1])
 
     # randomly divide the data
-    #shuffle(trainSet)
+    shuffle(trainSet)
     m = int(len(trainSet)/l)
     divided_trainSet = []
     for i in range(0,len(trainSet),m):
@@ -110,7 +110,6 @@ def classify_kd (name,KSET,l):
     # for every k in KSET, evaluate the error and find the best k_star
     min_Error = 1
     for k in KSET:
-        #average_Error = np.mean([AF.Error(p[0],p[1][:k]) for p in k_max_best])
         average_Error = np.mean([AF.point_error(p[0],p[2][k-1]) for p in k_max_best])
         #print(average_Error)
         if average_Error < min_Error:
@@ -119,7 +118,6 @@ def classify_kd (name,KSET,l):
 
     def f_D_k_result(Point):
         k_star_best = [] # in form[[Label,Vector,distance_from_Point,i],...,] <- len = k_star
-        #k_star_result = []
         for i in range(l):
             k_star_best_in_i,distance_set_in_i = tree_root_list_with_i[i].search_k_nearst_from_kd_node(Point,k_star)
             for m in range(k_star):
@@ -139,10 +137,6 @@ def classify_kd (name,KSET,l):
                     count += 1 
                 if count >= k:
                     break
-
-            #k_temp = [p for p in k_star_best if p[3] != i]
-            #k_star_result.extend(k_temp[:k_star])
-            #summ += sum(x[0] for x in k_temp[:k_star])
 
         if summ >= 0:
             return 1
