@@ -108,3 +108,9 @@ def merge_two_k_best(Set1,distance_set1,Set2,distance_set2,k):
         distance_set1 = [temp_distance_set[i] for i in temp_index]
     return Set1,distance_set1
 
+def sgnial(value):
+    if value < 0:
+        return -1
+    else:
+        return 1
+

@@ -130,24 +130,25 @@ def classify_kd (name,KSET,l):
         k_star_best = sorted(k_star_best, key = lambda p: p[2])
         #print(Point,k_star_best)
 
+        temp_summ = 0
         summ = 0
         for i in range(l):
             count = 0
             for p in k_star_best:
                 if p[3] != i:
-                    summ += p[0]
+                    temp_summ += p[0]
                     count += 1 
                 if count >= k:
                     break
+            if temp_summ < 0:
+                summ -= 1
+            else:
+                summ += 1
 
-            #k_temp = [p for p in k_star_best if p[3] != i]
-            #k_star_result.extend(k_temp[:k_star])
-            #summ += sum(x[0] for x in k_temp[:k_star])
-
-        if summ >= 0:
-            return 1
-        else:
+        if summ < 0:
             return -1
+        else:
+            return 1
 
     return [k_star,f_D_k_result]
     
