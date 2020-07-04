@@ -10,7 +10,7 @@ from Assistant_function import ErrorCal
 name = 'bananas-1-2d'
 #name = 'toy-10d'
 #name = 'smallset'
-KSET = range(1,31)
+KSET = range(1,11)
 l = 5
 def main_fun(name,KSET,l):
     start_time = time.time()

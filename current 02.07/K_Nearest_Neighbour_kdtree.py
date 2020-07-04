@@ -58,7 +58,7 @@ class Kd_Node:
                 k_Best,distance_set = AF.merge_two_k_best(k_Best,distance_set,local_k_best,local_distance_set,k)
             else:
                 axis = current_node.depth % dimension
-                if distance_set[-1] > abs(Point[axis] - current_node.pivot[1][axis]):
+                if len(k_Best) < k or distance_set[-1] > abs(Point[axis] - current_node.pivot[1][axis]):
                     Stack.extend(current_node.stacking_from_kd_node(Point))
         return k_Best,distance_set
 
@@ -69,7 +69,7 @@ def classify_kd (name,KSET,l):
     k_max = max(KSET)
 
     global Leafsize 
-    Leafsize = k_max*2
+    Leafsize = k_max*1.1
 
     # read the data
     trainSet = read_csv(name,"train")
@@ -79,7 +79,7 @@ def classify_kd (name,KSET,l):
     dimension = len(trainSet[0][1])
 
     # randomly divide the data
-    #shuffle(trainSet)
+    shuffle(trainSet)
     m = int(len(trainSet)/l)
     divided_trainSet = []
     for i in range(0,len(trainSet),m):
