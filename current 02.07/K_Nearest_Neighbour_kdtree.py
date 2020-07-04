@@ -10,13 +10,14 @@ class Kd_Node:
     def __init__(self, Data, depth = 0):
         #self.position = position
         self.depth = depth
+        self.axis = 0
 
         self.Data = Data
         self.pivot = None
 
         self.LeftChild = None
         self.RightChild = None
-        self.oppesite = None
+        #self.oppesite = None
         
         self.create_kd_node()
     
@@ -26,19 +27,21 @@ class Kd_Node:
             self.position = AC.Position.Leaf
         else:
             self.position = AC.Position.InsidePoint
-            axis = self.depth % dimension
-            sorted_points = sorted(self.Data, key = lambda point: point[1][axis])
+            sorted_points,self.axis = AF.axis_find(self.Data,dimension)
+            #axis = self.depth % dimension
+            #sorted_points = sorted(self.Data, key = lambda point: point[1][axis])
             self.pivot = sorted_points[int(n/2)]
             self.LeftChild  = Kd_Node(sorted_points[:int(n/2)], depth = self.depth+1)
             self.RightChild = Kd_Node(sorted_points[int(n/2):], depth = self.depth+1)
-            self.LeftChild.oppesite = self.RightChild
-            self.RightChild.oppesite = self.LeftChild
+            #self.LeftChild.oppesite = self.RightChild
+            #self.RightChild.oppesite = self.LeftChild
 
     def stacking_from_kd_node(self,Point):
         Stack = []
         current_node = self
         while current_node.position != AC.Position.Leaf:
-            axis = current_node.depth % dimension
+            axis = current_node.axis
+            #axis = current_node.depth % dimension
             if Point[axis] < current_node.pivot[1][axis]:
                 current_node = current_node.LeftChild
             else:
@@ -57,7 +60,8 @@ class Kd_Node:
                 local_k_best,local_distance_set = AF.k_closest_point(Point,current_node.Data,k)
                 k_Best,distance_set = AF.merge_two_k_best(k_Best,distance_set,local_k_best,local_distance_set,k)
             else:
-                axis = current_node.depth % dimension
+                axis = current_node.axis
+                #axis = current_node.depth % dimension
                 if len(k_Best) < k or distance_set[-1] > abs(Point[axis] - current_node.pivot[1][axis]):
                     Stack.extend(current_node.stacking_from_kd_node(Point))
         return k_Best,distance_set
@@ -69,7 +73,7 @@ def classify_kd (name,KSET,l):
     k_max = max(KSET)
 
     global Leafsize 
-    Leafsize = k_max*1.1
+    Leafsize = k_max*0.9
 
     # read the data
     trainSet = read_csv(name,"train")

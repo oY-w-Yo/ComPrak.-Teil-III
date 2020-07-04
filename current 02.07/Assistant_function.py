@@ -114,3 +114,18 @@ def sgnial(value):
     else:
         return 1
 
+def axis_find(pSet,dimension):
+    pSet_sort = []
+    width = 0
+    d = 0
+    for i in range(dimension):
+        pSet_temp_sort = sorted(pSet,key=lambda p: p[1][i])
+        width_temp = pSet_temp_sort[-1][1][i] - pSet_temp_sort[0][1][i]
+        if width_temp > width:
+            width = width_temp
+            pSet_sort = pSet_temp_sort
+            d = i
+    
+    return pSet_sort,d
+
+    
