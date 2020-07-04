@@ -17,7 +17,7 @@ def distance_sq(p1,p2):
             maxi = c
     return maxi
 
-
+'''
 def distance_sq2(p1,p2):
     maxi = 0
     for i in range(len(p1)):
@@ -26,7 +26,7 @@ def distance_sq2(p1,p2):
             maxi = c
     return maxi
 
-'''
+
 test1 = 'p1 = [10,203,4,55,40];p2 = [20,40,120,40,1];distance_sq(p1,p2)'
 test2 = 'p1 = [10,203,4,55,40];p2 = [20,40,120,40,1];distance_sq2(p1,p2)'
 print(timeit.timeit(test1,'from __main__ import distance_sq',number=100000))
@@ -54,10 +54,13 @@ def k_closest_point(Point,pSet,k):
 # the output is also in form [label, vektor]
 def farthest_point(p,pSet):
     farthest = pSet[0]
+    distance_max = distance_sq(p,farthest[1])
     for q in pSet:
-        if distance_sq(p,q[1]) > distance_sq(p,farthest[1]):
+        distance_temp = distance_sq(p,q[1])
+        if distance_temp > distance_max:
+            distance_max = distance_temp
             farthest = q
-    return farthest
+    return farthest, distance_max
 
 # 1. choose a point p randomly 2. find the point f1, fartherst from p
 # 3. find the point f2, fartherst from f1
@@ -108,12 +111,6 @@ def merge_two_k_best(Set1,distance_set1,Set2,distance_set2,k):
         distance_set1 = [temp_distance_set[i] for i in temp_index]
     return Set1,distance_set1
 
-def sgnial(value):
-    if value < 0:
-        return -1
-    else:
-        return 1
-
 def axis_find(pSet,dimension):
     pSet_sort = []
     width = 0
@@ -127,5 +124,16 @@ def axis_find(pSet,dimension):
             d = i
     
     return pSet_sort,d
+
+def direction_find(pSet,dimension):
+    #pSet_sort = []
+    #direction = None
+    p = choice(pSet)
+    f1,_ = farthest_point(p[1],pSet)
+    f2,_ = farthest_point(f1[1],pSet)
+    direction = [f1[1][i] - f2[1][i] for i in range(dimension)]
+    pSet_sort = sorted(pSet,key=lambda p: np.dot(p[1],direction))
+    return pSet_sort,direction
+
 
     
