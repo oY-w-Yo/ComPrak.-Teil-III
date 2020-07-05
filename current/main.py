@@ -16,8 +16,6 @@ def main(name,KSET,l,repeat):
     k_star = []
     for i in range(repeat):
         start_time = time.time()
-        KSET = range(1,51)
-        l = 5
         k, f = classify_kd(name,KSET,l)
         #k, f = classify_ball(name,KSET,l)
         print('k_star = ',k)
@@ -51,14 +49,14 @@ name = 'bananas-1-4d'
 #name = 'toy-10d'
 #name = 'smallset'
 
-KSET = range(1,51)
+KSET = range(1,201)
 l = 5
 
 ######################################################################################################
 #                                          Execution area                                            #
 ######################################################################################################
-#main(name,KSET,l,repeat=1)      # execute once
-main(name,KSET,l,repeat=5)    # execute 100 times to calculate average properties
+main(name,KSET,l,repeat=1)      # execute once
+#main(name,KSET,l,repeat=5)    # execute 100 times to calculate average properties
 
 
 
