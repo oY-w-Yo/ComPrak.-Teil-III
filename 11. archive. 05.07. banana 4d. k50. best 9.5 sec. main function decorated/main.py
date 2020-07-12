@@ -49,14 +49,14 @@ name = 'bananas-1-4d'
 #name = 'toy-10d'
 #name = 'smallset'
 
-KSET = range(1,201)
+KSET = range(1,51)
 l = 5
 
 ######################################################################################################
 #                                          Execution area                                            #
 ######################################################################################################
-main(name,KSET,l,repeat=1)      # execute once
-#main(name,KSET,l,repeat=5)    # execute 100 times to calculate average properties
+#main(name,KSET,l,repeat=1)      # execute once
+main(name,KSET,l,repeat=5)    # execute 100 times to calculate average properties
 
 
 

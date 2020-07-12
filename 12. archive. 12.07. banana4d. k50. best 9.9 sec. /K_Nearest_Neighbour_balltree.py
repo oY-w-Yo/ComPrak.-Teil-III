@@ -6,52 +6,60 @@ import Assistant_function as AF
 import time
 import copy
 
-class Kd_Node:
+class Ball_Node:
     def __init__(self, Data):
         #self.position = position
         #self.depth = depth
-        self.axis = 0
+        self.direction = None
+        self.radius = None
 
         self.Data = Data
         self.pivot = None
 
         self.LeftChild = None
         self.RightChild = None
-        #self.oppesite = None
+        self.oppesite = None
         
-        self.create_kd_node()
+        self.create_ball_node()
     
-    def create_kd_node(self):
+    def create_ball_node(self):
         n = len(self.Data)
         if n <= Leafsize:
             self.position = AC.Position.Leaf
+            sorted_points,self.direction = AF.direction_find(self.Data,dimension)
+            self.pivot = sorted_points[int(n/2)]
+            _,self.radius = AF.farthest_point(self.pivot[1],self.Data)
         else:
             self.position = AC.Position.InsidePoint
-            sorted_points,self.axis = AF.axis_find(self.Data,dimension)
+            sorted_points,self.direction = AF.direction_find(self.Data,dimension)
             #axis = self.depth % dimension
             #sorted_points = sorted(self.Data, key = lambda point: point[1][axis])
             self.pivot = sorted_points[int(n/2)]
-            self.LeftChild  = Kd_Node(sorted_points[:int(n/2)])
-            self.RightChild = Kd_Node(sorted_points[int(n/2):])
+            self.LeftChild  = Ball_Node(sorted_points[:int(n/2)])
+            self.RightChild = Ball_Node(sorted_points[int(n/2):])
+            _,self.radius = AF.farthest_point(self.pivot[1],self.Data)
+
             #self.LeftChild.oppesite = self.RightChild
             #self.RightChild.oppesite = self.LeftChild
 
-    def stacking_from_kd_node(self,Point):
+    def stacking_from_ball_node(self,Point):
         Stack = []
         current_node = self
         while current_node.position != AC.Position.Leaf:
-            axis = current_node.axis
-            #axis = current_node.depth % dimension
-            if Point[axis] < current_node.pivot[1][axis]:
+            direction = current_node.direction
+            #print(Point,current_node.pivot,direction)
+            #print(np.dot(Point,direction))
+            #print(np.dot(current_node.pivot[1],direction))
+            if np.dot(Point,direction) < np.dot(current_node.pivot[1],direction):
                 current_node = current_node.LeftChild
             else:
                 current_node = current_node.RightChild
             Stack.append(current_node)
         return Stack
 
-    def search_k_nearst_from_kd_node(self,Point,k):
+    def search_k_nearst_from_ball_node(self,Point,k):
         Stack = [self]
-        Stack.extend(self.stacking_from_kd_node(Point))
+        Stack.extend(self.stacking_from_ball_node(Point))
         k_Best = []
         distance_set = []
         while Stack != []:
@@ -60,25 +68,28 @@ class Kd_Node:
                 local_k_best,local_distance_set = AF.k_closest_point(Point,current_node.Data,k)
                 k_Best,distance_set = AF.merge_two_k_best(k_Best,distance_set,local_k_best,local_distance_set,k)
             else:
-                axis = current_node.axis
-                #axis = current_node.depth % dimension
-                if len(k_Best) < k or distance_set[-1] > abs(Point[axis] - current_node.pivot[1][axis]):
-                    if Point[axis] < current_node.pivot[1][axis]:
-                        current_node = current_node.RightChild
-                    else:
-                        current_node = current_node.LeftChild
+                direction = current_node.direction
+                if np.dot(Point,direction) < np.dot(current_node.pivot[1],direction):
+                    current_node = current_node.RightChild
+                    #current_node.oppesite = current_node.LeftChild
+                else:
+                    current_node = current_node.LeftChild
+                    #current_node.oppesite = current_node.RightChild
+                #print(AF.distance_sq(Point,current_node.pivot[1]))
+                #print(current_node.radius)
+                if len(k_Best) < k or distance_set[-1] > AF.distance_sq(Point,current_node.pivot[1]) - current_node.radius:
                     Stack.append(current_node)
-                    Stack.extend(current_node.stacking_from_kd_node(Point))
+                    Stack.extend(current_node.stacking_from_ball_node(Point))
         return k_Best,distance_set
 
 # Define f_D_k function
-def classify_kd (name,KSET,l,shufflee=True):
+def classify_ball (name,KSET,l):
 
     k_star = None
     k_max = max(KSET)
 
     global Leafsize 
-    Leafsize = int(k_max*0.9) + 1 
+    Leafsize = k_max*0.7
 
     # read the data
     trainSet = read_csv(name,"train")
@@ -88,8 +99,7 @@ def classify_kd (name,KSET,l,shufflee=True):
     dimension = len(trainSet[0][1])
 
     # randomly divide the data
-    if shufflee == True:
-        shuffle(trainSet)
+    shuffle(trainSet)
     m = int(len(trainSet)/l)
     divided_trainSet = []
     for i in range(0,len(trainSet),m):
@@ -101,14 +111,14 @@ def classify_kd (name,KSET,l,shufflee=True):
     for i in range(l):
         local_trainSet = [x for j in range(l) for x in divided_trainSet[j] if j != i]
         start2 = time.time()
-        root_node_without_i     = Kd_Node(local_trainSet) 
-        root_node_with_i        = Kd_Node(divided_trainSet[i]) 
+        root_node_without_i     = Ball_Node(local_trainSet) 
+        root_node_with_i        = Ball_Node(divided_trainSet[i]) 
         print("l={},tree_build".format(i),time.time()-start2)
         tree_root_list_with_i.append(root_node_with_i)
         # search the max_k nearst Element of each local_train_set and store them in the list
         start2 = time.time()
         for p in divided_trainSet[i]:
-            k_max_best_in_without_i,_ = root_node_without_i.search_k_nearst_from_kd_node(p[1],k_max)
+            k_max_best_in_without_i,_ = root_node_without_i.search_k_nearst_from_ball_node(p[1],k_max)
             # add a new list to store the accumulated sum of label 
             sum_label = []
             sum_label.append(k_max_best_in_without_i[0][0])
@@ -120,6 +130,7 @@ def classify_kd (name,KSET,l,shufflee=True):
     # for every k in KSET, evaluate the error and find the best k_star
     min_Error = 1
     for k in KSET:
+        #average_Error = np.mean([AF.Error(p[0],p[1][:k]) for p in k_max_best])
         average_Error = np.mean([AF.point_error(p[0],p[2][k-1]) for p in k_max_best])
         #print(average_Error)
         if average_Error < min_Error:
@@ -127,9 +138,10 @@ def classify_kd (name,KSET,l,shufflee=True):
             k_star = k
 
     def f_D_k_result(Point):
-        k_star_best = [] # in form [[Label,Vector,distance_from_Point,i],...,] <- len = k_star
+        k_star_best = [] # in form[[Label,Vector,distance_from_Point,i],...,] <- len = k_star
+        #k_star_result = []
         for i in range(l):
-            k_star_best_in_i,distance_set_in_i = tree_root_list_with_i[i].search_k_nearst_from_kd_node(Point,k_star)
+            k_star_best_in_i,distance_set_in_i = tree_root_list_with_i[i].search_k_nearst_from_ball_node(Point,k_star)
             for m in range(k_star):
                 k_star_best_in_i[m].append(distance_set_in_i[m]) 
                 k_star_best_in_i[m].append(i) 
@@ -152,10 +164,11 @@ def classify_kd (name,KSET,l,shufflee=True):
                 summ -= 1
             else:
                 summ += 1
-        if summ < 0:
-            return -1,k_star_best
-        else:
-                return 1,k_star_best
 
-    return k_star,f_D_k_result
+        if summ < 0:
+            return -1
+        else:
+            return 1
+
+    return [k_star,f_D_k_result]
     
