@@ -32,19 +32,16 @@ class Ball_Node:
         else:
             self.position = AC.Position.InsidePoint
             sorted_points,self.direction = AF.direction_find(self.Data,dimension)
-            #axis = self.depth % dimension
-            #sorted_points = sorted(self.Data, key = lambda point: point[1][axis])
+            
             self.pivot = sorted_points[int(n/2)]
             self.LeftChild  = Ball_Node(sorted_points[:int(n/2)])
             self.RightChild = Ball_Node(sorted_points[int(n/2):])
             _,self.radius = AF.farthest_point(self.pivot[1],self.Data)
 
-            #self.LeftChild.oppesite = self.RightChild
-            #self.RightChild.oppesite = self.LeftChild
-
     def stacking_from_ball_node(self,Point):
-        Stack = []
+        #stacking_start = time.time()
         current_node = self
+        Stack = [current_node]
         while current_node.position != AC.Position.Leaf:
             direction = current_node.direction
             #print(Point,current_node.pivot,direction)
@@ -55,11 +52,13 @@ class Ball_Node:
             else:
                 current_node = current_node.RightChild
             Stack.append(current_node)
+        #print('stacking for len {} costs {}'.format(len(Stack),time.time()-stacking_start))
         return Stack
 
     def search_k_nearst_from_ball_node(self,Point,k):
-        Stack = [self]
-        Stack.extend(self.stacking_from_ball_node(Point))
+        #Stack = [self]
+        #search_start = time.time()
+        Stack= self.stacking_from_ball_node(Point)
         k_Best = []
         distance_set = []
         while Stack != []:
@@ -77,29 +76,32 @@ class Ball_Node:
                     #current_node.oppesite = current_node.RightChild
                 #print(AF.distance_sq(Point,current_node.pivot[1]))
                 #print(current_node.radius)
-                if len(k_Best) < k or distance_set[-1] > AF.distance_sq(Point,current_node.pivot[1]) - current_node.radius:
-                    Stack.append(current_node)
+                if len(k_Best) < k or distance_set[-1] > AF.distance_sq_Ball(Point,current_node.pivot[1],current_node.radius):#distance_sq(Point,current_node.pivot[1]) - current_node.radius:
+                    #Stack.append(current_node)
                     Stack.extend(current_node.stacking_from_ball_node(Point))
+        #print('search in Data_size {} costs {}'.format(len(self.Data),time.time()-search_start))
         return k_Best,distance_set
 
 # Define f_D_k function
-def classify_ball (name,KSET,l):
+def classify_ball (name,KSET,l,Folder,shufflee=True):
 
     k_star = None
     k_max = max(KSET)
 
     global Leafsize 
-    Leafsize = k_max*0.7
+    Leafsize = int(k_max*0.9)+1
 
     # read the data
-    trainSet = read_csv(name,"train")
+    trainSet = read_csv(name,Folder,"train")
 
     # set dimension
     global dimension
     dimension = len(trainSet[0][1])
 
     # randomly divide the data
-    shuffle(trainSet)
+    if shufflee == True:
+        shuffle(trainSet)
+
     m = int(len(trainSet)/l)
     divided_trainSet = []
     for i in range(0,len(trainSet),m):
@@ -116,7 +118,7 @@ def classify_ball (name,KSET,l):
         print("l={},tree_build".format(i),time.time()-start2)
         tree_root_list_with_i.append(root_node_with_i)
         # search the max_k nearst Element of each local_train_set and store them in the list
-        start2 = time.time()
+        start3 = time.time()
         for p in divided_trainSet[i]:
             k_max_best_in_without_i,_ = root_node_without_i.search_k_nearst_from_ball_node(p[1],k_max)
             # add a new list to store the accumulated sum of label 
@@ -125,7 +127,7 @@ def classify_ball (name,KSET,l):
             for j in range(1,len(k_max_best_in_without_i)):
                 sum_label.append(sum_label[j-1] + k_max_best_in_without_i[j][0])
             k_max_best.append([p,k_max_best_in_without_i,sum_label])
-        print("l={},tree_search".format(i),time.time()-start2)
+        print("l={},tree_search".format(i),time.time()-start3)
     
     # for every k in KSET, evaluate the error and find the best k_star
     min_Error = 1
@@ -166,9 +168,9 @@ def classify_ball (name,KSET,l):
                 summ += 1
 
         if summ < 0:
-            return -1
+            return -1,k_star_best
         else:
-            return 1
+            return 1,k_star_best
 
     return [k_star,f_D_k_result]
     

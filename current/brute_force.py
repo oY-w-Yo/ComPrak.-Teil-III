@@ -4,9 +4,10 @@ import time
 import numpy as np
 from random import shuffle
 from K_Nearest_Neighbour_kdtree import classify_kd
+from K_Nearest_Neighbour_balltree import classify_ball
 
 # Define f_D_k function
-def brute_force(name,KSET,l):
+def brute_force(name,KSET,l,Folder):
     start_time1 = time.time()
     k_star = None
     k_max = max(KSET)
@@ -15,14 +16,13 @@ def brute_force(name,KSET,l):
     Leafsize = k_max*0.9
 
     # read the data
-    trainSet = read_csv(name,"train")
+    trainSet = read_csv(name,Folder,"train")
 
     # set dimension
     global dimension
     dimension = len(trainSet[0][1])
 
     # randomly divide the data
-    #shuffle(trainSet)
     m = int(len(trainSet)/l)
     divided_trainSet = []
     for i in range(0,len(trainSet),m):
@@ -96,13 +96,15 @@ def brute_force(name,KSET,l):
 
 #Test
 #name = 'smallset'
-name = 'bananas-1-2d'
+name = 'bananas-2-2d'
+Folder = 'classification-artificial/'
 start_time = time.time()
 KSET = range(1,5)
 l = 2
-_, f2 = classify_kd (name,KSET,l)
-_, f1 = brute_force (name,KSET,l)
-testSet = read_csv(name,'test')
+#_, f2 = classify_kd (name,KSET,l,Folder,shufflee=False)
+_, f2 = classify_ball (name,KSET,l,Folder,shufflee=False)
+_, f1 = brute_force (name,KSET,l,Folder)
+testSet = read_csv(name,Folder,'test')
 print("Test start")
 result1,E1 = AF.Test(f1,testSet)
 result2,E2 = AF.Test(f2,testSet)

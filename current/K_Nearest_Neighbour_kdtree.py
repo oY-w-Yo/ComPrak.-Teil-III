@@ -9,7 +9,6 @@ import copy
 class Kd_Node:
     def __init__(self, Data):
         #self.position = position
-        #self.depth = depth
         self.axis = 0
 
         self.Data = Data
@@ -17,7 +16,6 @@ class Kd_Node:
 
         self.LeftChild = None
         self.RightChild = None
-        #self.oppesite = None
         
         self.create_kd_node()
     
@@ -28,51 +26,52 @@ class Kd_Node:
         else:
             self.position = AC.Position.InsidePoint
             sorted_points,self.axis = AF.axis_find(self.Data,dimension)
-            #axis = self.depth % dimension
-            #sorted_points = sorted(self.Data, key = lambda point: point[1][axis])
             self.pivot = sorted_points[int(n/2)]
             self.LeftChild  = Kd_Node(sorted_points[:int(n/2)])
             self.RightChild = Kd_Node(sorted_points[int(n/2):])
-            #self.LeftChild.oppesite = self.RightChild
-            #self.RightChild.oppesite = self.LeftChild
 
     def stacking_from_kd_node(self,Point):
-        Stack = []
+        #stacking_start = time.time()
         current_node = self
+        Stack = [current_node]
         while current_node.position != AC.Position.Leaf:
             axis = current_node.axis
-            #axis = current_node.depth % dimension
             if Point[axis] < current_node.pivot[1][axis]:
                 current_node = current_node.LeftChild
             else:
                 current_node = current_node.RightChild
             Stack.append(current_node)
+        #print('stacking for len {} costs {}'.format(len(Stack),time.time()-stacking_start))
         return Stack
 
     def search_k_nearst_from_kd_node(self,Point,k):
-        Stack = [self]
-        Stack.extend(self.stacking_from_kd_node(Point))
+        #Stack = [self]
+        #search_start = time.time()
+        Stack = self.stacking_from_kd_node(Point)
         k_Best = []
         distance_set = []
+        #count = 0
         while Stack != []:
+            #count += 1
+            #print('iteration={}, current-len of stack {}'.format(count,len(Stack)))
             current_node = Stack.pop()
             if current_node.position == AC.Position.Leaf:
                 local_k_best,local_distance_set = AF.k_closest_point(Point,current_node.Data,k)
                 k_Best,distance_set = AF.merge_two_k_best(k_Best,distance_set,local_k_best,local_distance_set,k)
             else:
                 axis = current_node.axis
-                #axis = current_node.depth % dimension
                 if len(k_Best) < k or distance_set[-1] > abs(Point[axis] - current_node.pivot[1][axis]):
                     if Point[axis] < current_node.pivot[1][axis]:
                         current_node = current_node.RightChild
                     else:
                         current_node = current_node.LeftChild
-                    Stack.append(current_node)
+                    #Stack.append(current_node)
                     Stack.extend(current_node.stacking_from_kd_node(Point))
+        #print('search in Data_size {} costs {}'.format(len(self.Data),time.time()-search_start))
         return k_Best,distance_set
 
 # Define f_D_k function
-def classify_kd (name,KSET,l,shufflee=True):
+def classify_kd (name,KSET,l,Folder,shufflee=True):
 
     k_star = None
     k_max = max(KSET)
@@ -81,7 +80,7 @@ def classify_kd (name,KSET,l,shufflee=True):
     Leafsize = int(k_max*0.9) + 1 
 
     # read the data
-    trainSet = read_csv(name,"train")
+    trainSet = read_csv(name,Folder,"train")
 
     # set dimension
     global dimension

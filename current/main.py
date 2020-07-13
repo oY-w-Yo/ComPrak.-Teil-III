@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from read_and_write import read_csv, write_csv
 from K_Nearest_Neighbour_balltree import classify_ball
 from K_Nearest_Neighbour_kdtree import classify_kd
-from Assistant_function import Test
+from Assistant_function import Test,k_closest_point
 
 
 
@@ -17,13 +17,13 @@ def main(name,KSET,l,repeat, plotting = True):
     for i in range(repeat):
         start_time = time.time()
         l = 5
-        k, f = classify_kd(name,KSET,l)
-        #k, f = classify_ball(name,KSET,l)
-        print('k_star = ',k)
+        #k, f = classify_kd(name,KSET,l,Folder)
+        k, f = classify_ball(name,KSET,l,Folder)
+        print('k_star = {}'.format(k))
         mittel_time = time.time()
-        testSet = read_csv(name,'test')
-        result,E = Test(f,testSet)
-        print('Error =',E)
+        testSet = read_csv(name,Folder,'test')
+        _,E = Test(f,testSet)
+        print('Error = {}'.format(E))
         end_time = time.time()
         run_time = end_time-start_time
         build_time = mittel_time - start_time
@@ -45,12 +45,24 @@ def main(name,KSET,l,repeat, plotting = True):
 ######################################################################################################
 #                                         Configuration area                                         #
 ######################################################################################################
+#name = 'bananas-1-2d'
 name = 'bananas-1-4d'
 #name = 'bananas-5-4d'
-#name = 'bananas-1-2d'
 #name = 'toy-3d'
 #name = 'toy-10d'
 #name = 'smallset'
+
+#name = 'australian'
+#name = 'cod-rna.5000'
+#name = 'ijcnn1'
+#name = 'ijcnn1.10000'
+#name = 'ijcnn1.5000'
+#name = 'svmguide1'
+
+
+Folder = 'classification-artificial/'
+#Folder = 'classification-real/'
+
 
 KSET = range(1,51)
 l = 5
@@ -58,8 +70,10 @@ l = 5
 ######################################################################################################
 #                                          Execution area                                            #
 ######################################################################################################
-#main(name,KSET,l,repeat=1)      # execute once
-main(name,KSET,l,repeat=10,plotting=False)    # execute several times to calculate average properties
+main(name,KSET,l,repeat=1)      # execute once
+#main(name,KSET,l,repeat=10,plotting=False)    # execute several times to calculate average properties
+
+print('k_closest_point runs {} times'.format(k_closest_point.count))
 
 
 

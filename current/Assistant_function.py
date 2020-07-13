@@ -1,15 +1,15 @@
 import numpy as np
-#import heapq as hp
 import math
-from   random import choice
+from   random import choice,sample
 import timeit
+from Assistant_class import CallingCounter
 
 
 
 ######################## Define some useful help functions ###########################
 
-# squre of distance of two pure points
-def distance_sq(p1,p2):
+# maximum norm of two pure points
+def distance_max(p1,p2):
     maxi = 0
     for a,b in zip(p1,p2):
         c = abs(a-b)
@@ -17,21 +17,12 @@ def distance_sq(p1,p2):
             maxi = c
     return maxi
 
-'''
-def distance_sq2(p1,p2):
-    maxi = 0
-    for i in range(len(p1)):
-        c = p1[i] - p2[i]
-        if c > maxi:
-            maxi = c
-    return maxi
-
-
-test1 = 'p1 = [10,203,4,55,40];p2 = [20,40,120,40,1];distance_sq(p1,p2)'
-test2 = 'p1 = [10,203,4,55,40];p2 = [20,40,120,40,1];distance_sq2(p1,p2)'
-print(timeit.timeit(test1,'from __main__ import distance_sq',number=100000))
-print(timeit.timeit(test2,'from __main__ import distance_sq2',number=100000))
-'''
+# squre of distance of two pure points
+def distance_sq(p1,p2):
+    d = 0
+    for a,b in zip(p1,p2):
+        d += (a-b)**2
+    return d
 
 # d(p,Ball) = d(p,Ball_center) - Ball_radius
 # d(p,Ball)^2 = d(p,Ball_center)^2 + Ball_radius^2 - 2*d(p,Ball_center)*Ball_radius, also
@@ -43,9 +34,10 @@ def distance_sq_Ball(p,Ball_center,Ball_radius_sq):
     return d_sq
  
 # special for the datastructure, we have data in form [label, vektor] in pSet
+@CallingCounter
 def k_closest_point(Point,pSet,k):
     index_list = range(len(pSet)) 
-    distance_set = [distance_sq(p[1],Point) for p in pSet]
+    distance_set = [distance_max(p[1],Point) for p in pSet]
     index_list = sorted(index_list, key = lambda i: distance_set[i])[:k]
     #index_list = hp.nsmallest(k,index_list, key = lambda i: distance_set[i])
     return [pSet[i] for i in index_list],[distance_set[i] for i in index_list]
@@ -54,13 +46,13 @@ def k_closest_point(Point,pSet,k):
 # the output is also in form [label, vektor]
 def farthest_point(p,pSet):
     farthest = pSet[0]
-    distance_max = distance_sq(p,farthest[1])
+    distance_farthest = distance_max(p,farthest[1])
     for q in pSet:
-        distance_temp = distance_sq(p,q[1])
-        if distance_temp > distance_max:
-            distance_max = distance_temp
+        distance_temp = distance_max(p,q[1])
+        if distance_temp > distance_farthest:
+            distance_farthest = distance_temp
             farthest = q
-    return farthest, distance_max
+    return farthest, distance_farthest
 
 # 1. choose a point p randomly 2. find the point f1, fartherst from p
 # 3. find the point f2, fartherst from f1
@@ -132,12 +124,30 @@ def direction_find(pSet,dimension):
     f1,_ = farthest_point(p[1],pSet)
     f2,_ = farthest_point(f1[1],pSet)
     direction = [f1[1][i] - f2[1][i] for i in range(dimension)]
+    direction = direction/np.linalg.norm(direction)
+    pSet_sort = sorted(pSet,key=lambda p: np.dot(p[1],direction))
+    return pSet_sort,direction
+
+def direction_find1(pSet,dimension,leafsize):
+    # choose leafsize points in pSet randomly
+    if len(pSet) > leafsize:
+        pSet_sample = sample(pSet,leafsize)
+    else:
+        pSet_sample = pSet
+    #direction = None
+    p = choice(pSet_sample)
+    f1,_ = farthest_point(p[1],pSet_sample)
+    f2,_ = farthest_point(f1[1],pSet_sample)
+    direction = [f1[1][i] - f2[1][i] for i in range(dimension)]
     pSet_sort = sorted(pSet,key=lambda p: np.dot(p[1],direction))
     return pSet_sort,direction
 
 def Test(func,Testset):
+    Error_result = 0
     for x in Testset: # x in form [Label, Vector]
+        #x.append(func(x[1]))  # x in form [Label, Vector, Output_label]
         x.extend(func(x[1])) # x in form [Label, Vector, Output_label, k_star_best_list]
-    Error_result = sum(x[0] != x[2] for x in Testset)
-    average_Error = Error_result/len(Testset)
+        if x[0] != x[2]:
+            Error_result += 1
+    average_Error = float(Error_result/len(Testset))
     return Testset,average_Error

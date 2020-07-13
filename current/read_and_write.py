@@ -4,10 +4,10 @@ import numpy as np
 
 # Read the Data from 
 
-def read_csv(name,Settype):
+def read_csv(name,Folder,Settype):
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
     File_csv = name + "." + Settype + ".csv"
-    Path_csv = os.path.join(THIS_FOLDER, 'classification-artificial/',File_csv)
+    Path_csv = os.path.join(THIS_FOLDER, Folder,File_csv)
     with open(Path_csv) as File:
     #with open('classification-artificial/'+File_csv) as File:
         Data = csv.reader(File, delimiter=',')
