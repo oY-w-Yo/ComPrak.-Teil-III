@@ -21,11 +21,12 @@ def read_csv(name,Folder,Settype):
     return pointSet
 
 
-def write_csv(name,text):
+def write_csv(name,result):
     with open(name, 'w', newline='') as output_file:
         writer = csv.writer(output_file)
-        t = []
-        t.append(text)
-        writer.writerow(t)
+        for data in result:
+            line = [data[2]]
+            [ line.append(data[1][i]) for i in range(len(data[1])) ]
+            writer.writerow(line)
     output_file.close()
 
