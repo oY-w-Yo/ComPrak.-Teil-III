@@ -32,7 +32,7 @@ class Ball_Node:
         else:
             self.position = AC.Position.InsidePoint
             sorted_points,self.direction = AF.direction_find(self.Data,dimension)
-            
+            #sorted_points,self.direction = AF.direction_find1(self.Data,self.pivot,self.radius,dimension)
             self.pivot = sorted_points[int(n/2)]
             self.LeftChild  = Ball_Node(sorted_points[:int(n/2)])
             self.RightChild = Ball_Node(sorted_points[int(n/2):])
@@ -76,8 +76,7 @@ class Ball_Node:
                     #current_node.oppesite = current_node.RightChild
                 #print(AF.distance_sq(Point,current_node.pivot[1]))
                 #print(current_node.radius)
-                if len(k_Best) < k or distance_set[-1] > AF.distance_sq_Ball(Point,current_node.pivot[1],current_node.radius):#distance_sq(Point,current_node.pivot[1]) - current_node.radius:
-                    #Stack.append(current_node)
+                if len(k_Best) < k or distance_set[-1] > AF.distance_sq_Ball(Point,current_node.pivot[1],current_node.radius):
                     Stack.extend(current_node.stacking_from_ball_node(Point))
         #print('search in Data_size {} costs {}'.format(len(self.Data),time.time()-search_start))
         return k_Best,distance_set
@@ -145,9 +144,10 @@ def classify_ball (name,KSET,l,Folder,shufflee=True):
         for i in range(l):
             k_star_best_in_i,distance_set_in_i = tree_root_list_with_i[i].search_k_nearst_from_ball_node(Point,k_star)
             for m in range(k_star):
-                k_star_best_in_i[m].append(distance_set_in_i[m]) 
-                k_star_best_in_i[m].append(i) 
-            k_star_best.extend(k_star_best_in_i)
+                k_star_best.append([k_star_best_in_i[m][0], k_star_best_in_i[m][1], distance_set_in_i[m], i])
+                #k_star_best_in_i[m].append(distance_set_in_i[m]) 
+                #k_star_best_in_i[m].append(i) 
+            #k_star_best.extend(k_star_best_in_i)
         
         k_star_best = sorted(k_star_best, key = lambda p: p[2])
         #print(Point,k_star_best)

@@ -96,8 +96,9 @@ def brute_force(name,KSET,l,Folder):
 
 #Test
 #name = 'smallset'
-name = 'bananas-2-2d'
-Folder = 'classification-artificial/'
+#name = 'bananas-2-2d'
+#Folder = 'classification-artificial/'
+name,Folder = ['australian','classification-real/']
 start_time = time.time()
 KSET = range(1,5)
 l = 2

@@ -22,7 +22,7 @@ def brute_force(name,KSET,l,Folder):
     global dimension
     dimension = len(trainSet[0][1])
 
-    # randomly divide the data
+    # divide the data
     m = int(len(trainSet)/l)
     divided_trainSet = []
     for i in range(0,len(trainSet),m):
@@ -64,10 +64,7 @@ def brute_force(name,KSET,l,Folder):
         for i in range(l):
             k_star_best_in_i,distance_set_in_i = AF.k_closest_point(Point,divided_trainSet[i],k_star)
             for m in range(k_star):
-                k_star_best_in_i[m].append(distance_set_in_i[m]) 
-                k_star_best_in_i[m].append(i) 
-            k_star_best.extend(k_star_best_in_i)
-            k_star_list_in_i.append(k_star_best_in_i)
+                k_star_best.append([k_star_best_in_i[m][0], k_star_best_in_i[m][1], distance_set_in_i[m], i])
         
         k_star_best = sorted(k_star_best, key = lambda p: p[2])
         #print(Point,k_star_best)
@@ -87,27 +84,41 @@ def brute_force(name,KSET,l,Folder):
             else:
                 summ += 1
         if summ < 0:
-            return -1,k_star_list_in_i
+            return -1,k_star_best
         else:
-                return 1,k_star_list_in_i
+                return 1,k_star_best
 
     return k_star,f_D_k_result
     
 
 #Test
-#name = 'smallset'
-name = 'bananas-2-2d'
-Folder = 'classification-artificial/'
+name,Folder  =['ijcnn1.5000','classification-real/']
+
+#name,Folder  =['bananas-1-4d','classification-artificial/']
+#name,Folder  =['svmguide1','classification-real/']
+#name,Folder  =['toy-3d','classification-artificial/']
+#name,Folder  =['ijcnn1.5000','classification-real/']
+
+#name,Folder  =['smallset','classification-artificial/']
+#name,Folder  =['bananas-1-2d','classification-artificial/']
+#name,Folder  =['toy-10d','classification-artificial/']
+
+#name,Folder  = ['australian','classification-real/']
+#name,Folder  = ['cod-rna.5000','classification-real/']
+
+
+
+
 start_time = time.time()
-KSET = range(1,5)
+KSET = range(1,2)
 l = 2
-#_, f2 = classify_kd (name,KSET,l,Folder,shufflee=False)
+_, f1 = classify_kd (name,KSET,l,Folder,shufflee=False)
 _, f2 = classify_ball (name,KSET,l,Folder,shufflee=False)
-_, f1 = brute_force (name,KSET,l,Folder)
+#_, f1 = brute_force (name,KSET,l,Folder)
 testSet = read_csv(name,Folder,'test')
-print("Test start")
 result1,E1 = AF.Test(f1,testSet)
 result2,E2 = AF.Test(f2,testSet)
+
 print('average_Error1=',E1)
 print('average_Error2=',E2)
 print('correct?',bool(result1==result2))

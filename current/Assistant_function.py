@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import copy
 from   random import choice,sample
 import timeit
 from Assistant_class import CallingCounter
@@ -17,21 +18,9 @@ def distance_max(p1,p2):
             maxi = c
     return maxi
 
-# squre of distance of two pure points
-def distance_sq(p1,p2):
-    d = 0
-    for a,b in zip(p1,p2):
-        d += (a-b)**2
-    return d
 
-# d(p,Ball) = d(p,Ball_center) - Ball_radius
-# d(p,Ball)^2 = d(p,Ball_center)^2 + Ball_radius^2 - 2*d(p,Ball_center)*Ball_radius, also
-# d(p,Ball)_sq = d(p,Ball_center)_sq + Ball_radius_sq 
-def distance_sq_Ball(p,Ball_center,Ball_radius_sq):
-    k_sq = distance_sq(p,Ball_center)
-    r_sq = Ball_radius_sq 
-    d_sq = k_sq + r_sq - 2*math.sqrt(k_sq * r_sq)
-    return d_sq
+def distance_sq_Ball(p,Ball_center,Ball_radius):
+    return abs(distance_max(p,Ball_center) - Ball_radius)
  
 # special for the datastructure, we have data in form [label, vektor] in pSet
 @CallingCounter
@@ -114,7 +103,7 @@ def axis_find(pSet,dimension):
             width = width_temp
             pSet_sort = pSet_temp_sort
             d = i
-    
+
     return pSet_sort,d
 
 def direction_find(pSet,dimension):
@@ -124,30 +113,39 @@ def direction_find(pSet,dimension):
     f1,_ = farthest_point(p[1],pSet)
     f2,_ = farthest_point(f1[1],pSet)
     direction = [f1[1][i] - f2[1][i] for i in range(dimension)]
-    direction = direction/np.linalg.norm(direction)
+    #print(np.linalg.norm(direction))
+    #direction = direction/np.linalg.norm(direction)
     pSet_sort = sorted(pSet,key=lambda p: np.dot(p[1],direction))
     return pSet_sort,direction
-
-def direction_find1(pSet,dimension,leafsize):
-    # choose leafsize points in pSet randomly
-    if len(pSet) > leafsize:
-        pSet_sample = sample(pSet,leafsize)
+'''
+def direction_find1(pSet,pivot,radius,dimension):
+    n = len(pSet)
+    if pivot == None:
+        direction = np.zeros(dimension)
+        sorted_points,axis = axis_find(pSet,dimension)
+        dimension[axis] = 1
+        pivot = sorted_points[int(n/2)]
+        LeftSet  = sorted_points[:int(n/2)]
+        RightSet = sorted_points[int(n/2):]
     else:
-        pSet_sample = pSet
-    #direction = None
-    p = choice(pSet_sample)
-    f1,_ = farthest_point(p[1],pSet_sample)
-    f2,_ = farthest_point(f1[1],pSet_sample)
-    direction = [f1[1][i] - f2[1][i] for i in range(dimension)]
-    pSet_sort = sorted(pSet,key=lambda p: np.dot(p[1],direction))
+        LeftSet = []
+        RightSet = []
+        f1,_ = farthest_point(pivot[1],pSet)
+        f2,_ = farthest_point(f1[1],pSet)
+        direction = [f1[1][i] - f2[1][i] for i in range(dimension)]
+        for x in pSet:
+            pass
     return pSet_sort,direction
+'''
 
 def Test(func,Testset):
     Error_result = 0
-    for x in Testset: # x in form [Label, Vector]
+    temp_test = copy.deepcopy(Testset)
+    for x in temp_test: # x in form [Label, Vector]
         #x.append(func(x[1]))  # x in form [Label, Vector, Output_label]
         x.extend(func(x[1])) # x in form [Label, Vector, Output_label, k_star_best_list]
         if x[0] != x[2]:
             Error_result += 1
-    average_Error = float(Error_result/len(Testset))
-    return Testset,average_Error
+    average_Error = float(Error_result/len(temp_test))
+    #print(temp_test,'\n')
+    return temp_test,average_Error

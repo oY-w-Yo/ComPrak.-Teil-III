@@ -55,7 +55,7 @@ def main(data,KSET,l, Methode, repeat=1, plotting = False):
 #                                         Configuration area                                         #
 ######################################################################################################
 
-KSET = range(1,51)
+KSET = range(1,201)
 l = 5
 
 #data = ['bananas-1-2d','classification-artificial/']
@@ -65,9 +65,9 @@ l = 5
 #data = ['toy-10d','classification-artificial/']
 #data = ['smallset','classification-artificial/']
 
-data = ['australian','classification-real/']
+#data = ['australian','classification-real/']
 #data = ['cod-rna.5000','classification-real/']
-#data = ['ijcnn1','classification-real/']
+data = ['ijcnn1','classification-real/']
 #data = ['ijcnn1.10000','classification-real/']
 #data = ['ijcnn1.5000','classification-real/']
 #data = ['svmguide1','classification-real/']
@@ -76,9 +76,9 @@ data = ['australian','classification-real/']
 ######################################################################################################
 #                                          Execution area                                            #
 ######################################################################################################
-main(data,KSET,l,"kd",repeat=1)      # execute once
+main(data,KSET,l,"ball",repeat=1)      # execute once
 #main(data,KSET,l,"kd",repeat=10,plotting=False)    # execute several times to calculate average properties
-#print('k_closest_point runs {} times'.format(k_closest_point.count))
+print('k_closest_point runs {} times'.format(k_closest_point.count))
 
 
 

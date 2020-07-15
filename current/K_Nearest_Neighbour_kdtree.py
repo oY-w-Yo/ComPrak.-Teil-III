@@ -77,7 +77,7 @@ def classify_kd (name,KSET,l,Folder,shufflee=True):
     k_max = max(KSET)
 
     global Leafsize 
-    Leafsize = int(k_max*0.9) + 1 
+    Leafsize = int(k_max*0.9) + 2
 
     # read the data
     trainSet = read_csv(name,Folder,"train")
@@ -89,6 +89,7 @@ def classify_kd (name,KSET,l,Folder,shufflee=True):
     # randomly divide the data
     if shufflee == True:
         shuffle(trainSet)
+        
     m = int(len(trainSet)/l)
     divided_trainSet = []
     for i in range(0,len(trainSet),m):
@@ -130,9 +131,10 @@ def classify_kd (name,KSET,l,Folder,shufflee=True):
         for i in range(l):
             k_star_best_in_i,distance_set_in_i = tree_root_list_with_i[i].search_k_nearst_from_kd_node(Point,k_star)
             for m in range(k_star):
-                k_star_best_in_i[m].append(distance_set_in_i[m]) 
-                k_star_best_in_i[m].append(i) 
-            k_star_best.extend(k_star_best_in_i)
+                k_star_best.append([k_star_best_in_i[m][0], k_star_best_in_i[m][1], distance_set_in_i[m], i])
+                #k_star_best_in_i[m].append(distance_set_in_i[m]) 
+                #k_star_best_in_i[m].append(i) 
+            #k_star_best.extend(k_star_best_in_i)
         
         k_star_best = sorted(k_star_best, key = lambda p: p[2])
         #print(Point,k_star_best)
