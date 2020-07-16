@@ -10,49 +10,66 @@ class Ball_Node:
     def __init__(self, Data):
         #self.position = position
         #self.depth = depth
-        self.direction = None
-        self.radius = None
+        #self.centrum = None
+        
 
         self.Data = Data
         self.pivot = None
+        self.radius = None
+        self.direction = None
+        self.axis = None
+        #self.left_pivot = None
+        #self.right_pivot = None
 
         self.LeftChild = None
         self.RightChild = None
-        self.oppesite = None
-        
+        #self.oppesite = None
+
         self.create_ball_node()
     
     def create_ball_node(self):
         n = len(self.Data)
         if n <= Leafsize:
             self.position = AC.Position.Leaf
-            sorted_points,self.direction = AF.direction_find(self.Data,dimension)
+            sorted_points,self.axis = AF.axis_find(self.Data,dimension)
             self.pivot = sorted_points[int(n/2)]
-            _,self.radius = AF.farthest_point(self.pivot[1],self.Data)
+            self.radius = max(AF.distance_max(self.pivot[1],p[1]) for p in self.Data)
         else:
             self.position = AC.Position.InsidePoint
-            sorted_points,self.direction = AF.direction_find(self.Data,dimension)
-            #sorted_points,self.direction = AF.direction_find1(self.Data,self.pivot,self.radius,dimension)
+            sorted_points,self.axis = AF.axis_find(self.Data,dimension)
             self.pivot = sorted_points[int(n/2)]
+            self.radius = max(AF.distance_max(self.pivot[1],p[1]) for p in self.Data)
             self.LeftChild  = Ball_Node(sorted_points[:int(n/2)])
             self.RightChild = Ball_Node(sorted_points[int(n/2):])
-            _,self.radius = AF.farthest_point(self.pivot[1],self.Data)
-
+            '''
+            Left_data = []
+            Right_data = []
+            for p in self.Data:
+                if AF.distance_max(p[1],self.left_pivot[1]) < AF.distance_max(p[1],self.right_pivot[1]):
+                    Left_data.append(p)
+                else:
+                    Right_data.append(p)
+            '''
+            
+    
+    #@AC.CallingCounter
     def stacking_from_ball_node(self,Point):
         #stacking_start = time.time()
         current_node = self
         Stack = [current_node]
         while current_node.position != AC.Position.Leaf:
-            direction = current_node.direction
+            #direction = current_node.direction
             #print(Point,current_node.pivot,direction)
             #print(np.dot(Point,direction))
             #print(np.dot(current_node.pivot[1],direction))
-            if np.dot(Point,direction) < np.dot(current_node.pivot[1],direction):
+            axis = current_node.axis
+            if Point[axis] < current_node.pivot[1][axis]:
                 current_node = current_node.LeftChild
             else:
                 current_node = current_node.RightChild
+            
             Stack.append(current_node)
-        #print('stacking for len {} costs {}'.format(len(Stack),time.time()-stacking_start))
+        #print('stacking for ball in len {} costs {}'.format(len(Stack),time.time()-stacking_start))
         return Stack
 
     def search_k_nearst_from_ball_node(self,Point,k):
@@ -67,16 +84,15 @@ class Ball_Node:
                 local_k_best,local_distance_set = AF.k_closest_point(Point,current_node.Data,k)
                 k_Best,distance_set = AF.merge_two_k_best(k_Best,distance_set,local_k_best,local_distance_set,k)
             else:
-                direction = current_node.direction
-                if np.dot(Point,direction) < np.dot(current_node.pivot[1],direction):
+                axis = current_node.axis
+                if Point[axis] < current_node.pivot[1][axis]:
                     current_node = current_node.RightChild
-                    #current_node.oppesite = current_node.LeftChild
                 else:
                     current_node = current_node.LeftChild
-                    #current_node.oppesite = current_node.RightChild
-                #print(AF.distance_sq(Point,current_node.pivot[1]))
-                #print(current_node.radius)
-                if len(k_Best) < k or distance_set[-1] > AF.distance_sq_Ball(Point,current_node.pivot[1],current_node.radius):
+
+                dis = AF.distance_sq_Ball(Point,current_node.pivot[1],current_node.radius)
+                if len(k_Best) < k or distance_set[-1] > dis:
+                    #print('worst distance={},distance = {}'.format(distance_set[-1],dis))
                     Stack.extend(current_node.stacking_from_ball_node(Point))
         #print('search in Data_size {} costs {}'.format(len(self.Data),time.time()-search_start))
         return k_Best,distance_set
@@ -88,7 +104,7 @@ def classify_ball (name,KSET,l,Folder,shufflee=True):
     k_max = max(KSET)
 
     global Leafsize 
-    Leafsize = int(k_max*0.9)+1
+    Leafsize = max(int(k_max*0.9),30)
 
     # read the data
     trainSet = read_csv(name,Folder,"train")
