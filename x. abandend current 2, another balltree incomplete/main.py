@@ -56,7 +56,7 @@ def main(data,KSET,l, Methode, repeat=1, plotting = False):
 #                                         Configuration area                                         #
 ######################################################################################################
 
-KSET = range(1,201)
+KSET = range(1,11)
 l = 5
 
 #data = ['bananas-1-2d','classification-artificial/']

@@ -45,17 +45,13 @@ def farthest_point(p,pSet):
     return farthest, distance_farthest
 
 def from_data_to_ball(pSet,dimension):
-    n = len(pSet)
-    mean = [0 for i in range(dimension)]
-    for i in range(dimension):
-        for x in pSet:
-            mean[i] += x[1][i]
-        mean[i] = mean[i]/n
-    #mean = [sum(x[1][i] for x in pSet)/n for i in range(dimension)]
-    left_pivot,radius = farthest_point(mean,pSet)
+    p = choice(pSet)
+    f1,_ = farthest_point(p[1],pSet)
+    f2,_ = farthest_point(f1[1],pSet)
+    crentrum = [(f1[1][i] + f2[1][i])/2 for i in range(dimension)]
+    left_pivot,radius = farthest_point(crentrum,pSet)
     right_pivot,_ = farthest_point(left_pivot[1],pSet)
-    return mean, radius, left_pivot, right_pivot
-
+    return crentrum, radius, left_pivot, right_pivot
 
 
 

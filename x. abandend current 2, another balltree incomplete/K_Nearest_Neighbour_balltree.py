@@ -23,33 +23,42 @@ class Ball_Node:
         self.RightChild = None
         #self.oppesite = None
         
-        self.centrum, self.radius, self.left_pivot, self.right_pivot = AF.from_data_to_ball(self.Data,dimension)
+        #self.centrum, self.radius, self.left_pivot, self.right_pivot = AF.from_data_to_ball(self.Data,dimension)
+        #print('data = {} centrum = {} radius ={} left_pivot={} right_pivot={}'.format(self.Data,self.centrum, self.radius, self.left_pivot, self.right_pivot))
 
         self.create_ball_node()
     
     def create_ball_node(self):
         n = len(self.Data)
         if n <= Leafsize:
+            #print('leaf')
             self.position = AC.Position.Leaf
-            #self.centrum, self.radius, _, _ = AF.from_data_to_ball(self.Data,dimension)
+            self.centrum, self.radius, _, _ = AF.from_data_to_ball(self.Data,dimension)
+            #print('data={},ctreum={},radius={}'.format(self.Data,self.centrum,self.radius))
             '''
             sorted_points,self.direction,self.pivot,self.pivot_project  = AF.direction_find(self.Data,dimension)
             self.pivot = sorted_points[int(n/2)]
             _,self.radius = AF.farthest_point(self.pivot[1],self.Data)
             '''
         else:
+            #print('inside')
             self.position = AC.Position.InsidePoint
-            
+            self.centrum, self.radius, self.left_pivot, self.right_pivot = AF.from_data_to_ball(self.Data,dimension)
             #sorted_points,self.direction,self.pivot,self.pivot_project = AF.direction_find(self.Data,dimension)
             #sorted_points,self.direction = AF.direction_find1(self.Data,self.pivot,self.radius,dimension)
             #self.pivot = sorted_points[int(n/2)]
+            #print('ctreum={},radius={}'.format(self.centrum,self.radius))
             Left_data = []
             Right_data = []
             for p in self.Data:
+                
                 if AF.distance_max(p[1],self.left_pivot[1]) < AF.distance_max(p[1],self.right_pivot[1]):
+                    #print('p={},left_pivot={},right_pivot={}, go left'.format(p[1],self.left_pivot[1],self.right_pivot[1]))
                     Left_data.append(p)
                 else:
+                    #print('p={},left_pivot={},right_pivot={}, go right'.format(p[1],self.left_pivot[1],self.right_pivot[1]))
                     Right_data.append(p)
+            #print("LeftData={}, rightdata={}".format(Left_data,Right_data))
             self.LeftChild  = Ball_Node(Left_data)
             self.RightChild = Ball_Node(Right_data)
     
@@ -111,7 +120,8 @@ def classify_ball (name,KSET,l,Folder,shufflee=True):
     k_max = max(KSET)
 
     global Leafsize 
-    Leafsize = max(int(k_max*0.9),30)
+    Leafsize = 2
+    #Leafsize = max(int(k_max*0.9),30)
 
     # read the data
     trainSet = read_csv(name,Folder,"train")

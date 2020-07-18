@@ -8,7 +8,6 @@ import copy
 
 class Kd_Node:
     def __init__(self, Data):
-        #self.position = position
         self.axis = 0
 
         self.Data = Data
@@ -31,7 +30,6 @@ class Kd_Node:
             self.RightChild = Kd_Node(sorted_points[int(n/2):])
 
     def stacking_from_kd_node(self,Point):
-        #stacking_start = time.time()
         current_node = self
         Stack = [current_node]
         while current_node.position != AC.Position.Leaf:
@@ -41,17 +39,13 @@ class Kd_Node:
             else:
                 current_node = current_node.RightChild
             Stack.append(current_node)
-        #print('stacking for kd len {} costs {}'.format(len(Stack),time.time()-stacking_start))
         return Stack
 
     def search_k_nearst_from_kd_node(self,Point,k):
-        #print("Point=.{}".format(Point))
         Stack = self.stacking_from_kd_node(Point)
         k_Best = []
         distance_set = []
-        #count = 0
         while Stack != []:
-            #print('len of Stack={}'.format(len(Stack)))
             current_node = Stack.pop()
             if current_node.position == AC.Position.Leaf:
                 local_k_best,local_distance_set = AF.k_closest_point(Point,current_node.Data,k)
@@ -63,9 +57,7 @@ class Kd_Node:
                         current_node = current_node.RightChild
                     else:
                         current_node = current_node.LeftChild
-                    #Stack.append(current_node)
                     Stack.extend(current_node.stacking_from_kd_node(Point))
-        #print('search in Data_size {} costs {}'.format(len(self.Data),time.time()-search_start))
         return k_Best,distance_set
 
 # Define f_D_k function
@@ -119,7 +111,6 @@ def classify_kd (name,KSET,l,Folder,shufflee=True):
     min_Error = 1
     for k in KSET:
         average_Error = np.mean([AF.point_error(p[0],p[2][k-1]) for p in k_max_best])
-        #print(average_Error)
         if average_Error < min_Error:
             min_Error = average_Error
             k_star = k
@@ -130,12 +121,7 @@ def classify_kd (name,KSET,l,Folder,shufflee=True):
             k_star_best_in_i,distance_set_in_i = tree_root_list_with_i[i].search_k_nearst_from_kd_node(Point,k_star)
             for m in range(k_star):
                 k_star_best.append([k_star_best_in_i[m][0], k_star_best_in_i[m][1], distance_set_in_i[m], i])
-                #k_star_best_in_i[m].append(distance_set_in_i[m]) 
-                #k_star_best_in_i[m].append(i) 
-            #k_star_best.extend(k_star_best_in_i)
-        
         k_star_best = sorted(k_star_best, key = lambda p: p[2])
-        #print(Point,k_star_best)
 
         temp_summ = 0
         summ = 0

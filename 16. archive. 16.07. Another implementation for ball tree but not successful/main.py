@@ -56,11 +56,11 @@ def main(data,KSET,l, Methode, repeat=1, plotting = False):
 #                                         Configuration area                                         #
 ######################################################################################################
 
-KSET = range(1,51)
+KSET = range(1,201)
 l = 5
 
 #data = ['bananas-1-2d','classification-artificial/']
-data = ['bananas-1-4d','classification-artificial/']
+#data = ['bananas-1-4d','classification-artificial/']
 #data = ['bananas-5-4d','classification-artificial/']
 #data = ['toy-3d','classification-artificial/']
 #data = ['toy-10d','classification-artificial/']
@@ -68,7 +68,7 @@ data = ['bananas-1-4d','classification-artificial/']
 
 #data = ['australian','classification-real/']
 #data = ['cod-rna.5000','classification-real/']
-#data = ['ijcnn1','classification-real/']
+data = ['ijcnn1','classification-real/']
 #data = ['ijcnn1.10000','classification-real/']
 #data = ['ijcnn1.5000','classification-real/']
 #data = ['svmguide1','classification-real/']

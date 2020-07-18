@@ -60,7 +60,6 @@ def brute_force(name,KSET,l,Folder):
 
     def f_D_k_result(Point):
         k_star_best = [] # in form [[Label,Vector,distance_from_Point,i],...,] <- len = k_star
-        #k_star_list_in_i = [] # in form [[k_star_best_in_0], [k_star_best_in_1],...,[k_star_best_in_l]] <- len = l
         for i in range(l):
             k_star_best_in_i,distance_set_in_i = AF.k_closest_point(Point,divided_trainSet[i],k_star)
             for m in range(k_star):
@@ -96,14 +95,14 @@ def brute_force(name,KSET,l,Folder):
 
 #name,Folder  =['bananas-1-4d','classification-artificial/']
 #name,Folder  =['svmguide1','classification-real/']
-name,Folder  =['toy-3d','classification-artificial/']
+#name,Folder  =['toy-3d','classification-artificial/']
 #name,Folder  =['ijcnn1.5000','classification-real/']
 
 #name,Folder  =['smallset','classification-artificial/']
 #name,Folder  =['bananas-1-2d','classification-artificial/']
 #name,Folder  =['toy-10d','classification-artificial/']
 
-#name,Folder  = ['australian','classification-real/']
+name,Folder  = ['australian','classification-real/']
 #name,Folder  = ['cod-rna.5000','classification-real/']
 
 
@@ -113,16 +112,15 @@ start_time = time.time()
 KSET = range(1,2)
 l = 2
 _, f1 = classify_kd (name,KSET,l,Folder,shufflee=False)
-_, f2 = classify_ball (name,KSET,l,Folder,shufflee=False)
-#_, f1 = brute_force (name,KSET,l,Folder)
+#_, f2 = classify_ball (name,KSET,l,Folder,shufflee=False)
+_, f2 = brute_force (name,KSET,l,Folder)
 testSet = read_csv(name,Folder,'test')
 result1,E1 = AF.Test(f1,testSet)
 result2,E2 = AF.Test(f2,testSet)
-#print(result1,'\n')
-#print(result2,'\n')
+
 print('average_Error1=',E1)
 print('average_Error2=',E2)
-print('correct?',result1==result2)
+print('correct?',bool(result1==result2))
 #for x in result:
 #    print(result.index(x),x)
 run_time = time.time()-start_time
