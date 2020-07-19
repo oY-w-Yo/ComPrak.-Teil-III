@@ -18,6 +18,7 @@ def plot2dData(DataSet,titel=""):
     plt.scatter(oneX, oneY, s=1,  c="r", alpha=0.6)
     plt.scatter(minusOneX, minusOneY, s=1, c="b", alpha=0.6)
     plt.title(titel)
+    plt.savefig('./plot-results/'+titel+'.jpg')
     plt.show()
 
 def plot2dData_with_point(DataSet,point,radius,titel=""): 
@@ -55,9 +56,11 @@ def plot2dData_with_point(DataSet,point,radius,titel=""):
     plt.title(titel)
     plt.show()
 
-def plott(divided_trainset,result,k,file_name):
+def plott(trainset,testset,divided_trainset,result,k,file_name):
     # plot the whole classification_result
     classification_result = [[p[2],p[1]] for p in result]
+    plot2dData(trainset, '{} trainset'.format(file_name[0]))
+    plot2dData(testset, '{} testset'.format(file_name[0]))
     plot2dData(classification_result, '{} classification result for k* {}'.format(file_name[0],k))
 
 
@@ -65,7 +68,7 @@ def plott(divided_trainset,result,k,file_name):
     s = choice(result)
 
     # plot the result for s in slices
-    # filter and get raduis and result in slices
+        # filter and get raduis and result in slices
     print("k={}".format(k))
     radius_list= []
     classification_for_p_list= []
@@ -86,4 +89,4 @@ def plott(divided_trainset,result,k,file_name):
 
     for i in range(len(divided_trainset)):
         local_trainSet = [x for j in range(len(divided_trainset)) for x in divided_trainset[j] if j != i]
-        plot2dData_with_point(local_trainSet,[classification_for_p_list[i],s[1]],radius_list[i],'slices without {}'.format(i))
+        plot2dData_with_point(local_trainSet,[classification_for_p_list[i],s[1]],radius_list[i],'k* nearest in slices without {}'.format(i))

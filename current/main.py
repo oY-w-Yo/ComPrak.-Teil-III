@@ -45,8 +45,9 @@ def mainCode(data,KSET,l, Methode, repeat=1, plotting = False):
         k_star.append(k)
     
     dimension = len(testSet[0][1])
+    trainSet = read_csv(data[0],data[1],'test')
     if dimension == 2:
-        plott(divided_trainset,result,k,data)
+        plott(trainSet,testSet,divided_trainset,result,k,data)
         
 
     # generating average properties  
@@ -64,18 +65,20 @@ def mainCode(data,KSET,l, Methode, repeat=1, plotting = False):
 #                                         Configuration area                                         #
 ######################################################################################################
 
-KSET = range(1,51)
+KSET = range(1,201)
 l = 5
 
-data = ['bananas-1-2d','classification-artificial/']
+#data = ['bananas-1-2d','classification-artificial/']
 #data = ['bananas-1-4d','classification-artificial/']
 #data = ['bananas-5-4d','classification-artificial/']
+#data = ['crosses-2d','classification-artificial/']
+#data = ['toy-2d','classification-artificial/']
 #data = ['toy-3d','classification-artificial/']
 #data = ['toy-10d','classification-artificial/']
 #data = ['smallset','classification-artificial/']
 
 #data = ['australian','classification-real/']
-#data = ['cod-rna.5000','classification-real/']
+data = ['cod-rna.5000','classification-real/']
 #data = ['ijcnn1','classification-real/']
 #data = ['ijcnn1.10000','classification-real/']
 #data = ['ijcnn1.5000','classification-real/']
@@ -89,7 +92,7 @@ data = ['bananas-1-2d','classification-artificial/']
 def main():
     print("Number of processors: ", mp.cpu_count())
     pool = mp.Pool(mp.cpu_count())
-    pool.starmap(mainCode, [(data, KSET, l, "kd", 1)])
+    pool.starmap(mainCode, [(data, KSET, l, "ball", 1)])
     pool.close()
 
 # Run the code
@@ -97,7 +100,7 @@ if __name__ == '__main__':
     main()
 
 
-#mainCode(data,KSET,l,"kd",repeat=1)      # execute once
+#mainCode(data,KSET,l,"ball",repeat=1)      # execute once
 #main(data,KSET,l,"kd",repeat=3,plotting=False)    # execute several times to calculate average properties
 #print('k_closest_point runs {} times'.format(k_closest_point.count))
 #print('merge_two_k_best runs {} times'.format(merge_two_k_best.count))
