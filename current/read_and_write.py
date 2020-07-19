@@ -9,7 +9,6 @@ def read_csv(name,Folder,Settype):
     File_csv = name + "." + Settype + ".csv"
     Path_csv = os.path.join(THIS_FOLDER, Folder,File_csv)
     with open(Path_csv) as File:
-    #with open('classification-artificial/'+File_csv) as File:
         Data = csv.reader(File, delimiter=',')
         pointSet = []
         for point in Data:
@@ -22,8 +21,11 @@ def read_csv(name,Folder,Settype):
 
 
 def write_csv(name,result):
-    with open(name, 'w', newline='') as output_file:
+    THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+    csv_path = os.path.join(THIS_FOLDER,'classification-results/', name)
+    with open(csv_path, 'w', newline='') as output_file:
         writer = csv.writer(output_file)
+        print(csv_path)
         for data in result:
             line = [data[2]]
             [ line.append(data[1][i]) for i in range(len(data[1])) ]

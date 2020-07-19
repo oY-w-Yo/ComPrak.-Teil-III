@@ -5,6 +5,7 @@ import Assistant_class as AC
 import Assistant_function as AF
 import time
 import copy
+import math
 
 class Kd_Node:
     def __init__(self, Data):
@@ -60,14 +61,28 @@ class Kd_Node:
                     Stack.extend(current_node.stacking_from_kd_node(Point))
         return k_Best,distance_set
 
+
+def k_star_best_find(Point):
+    k_star_best = [] # in form [[Label,Vector,distance_from_Point,i],...,] <- len = k_star
+    for i in range(L):
+        k_star_best_in_i,distance_set_in_i = tree_root_list_with_i[i].search_k_nearst_from_kd_node(Point,k_star)
+        for m in range(k_star):
+            k_star_best.append([k_star_best_in_i[m][0], k_star_best_in_i[m][1], distance_set_in_i[m], i])
+    return sorted(k_star_best, key = lambda p: p[2])  
+    #k_star_best = sorted(k_star_best, key = lambda p: p[2])    
+
+
 # Define f_D_k function
 def classify_kd (name,KSET,l,Folder,shufflee=True):
 
-    k_star = None
     k_max = max(KSET)
 
-    global Leafsize 
+    global Leafsize,k_star,L,tree_root_list_with_i 
     Leafsize = int(k_max*0.9) + 2
+    k_star = None
+    L = l
+    tree_root_list_with_i = []
+
 
     # read the data
     trainSet = read_csv(name,Folder,"train")
@@ -80,16 +95,15 @@ def classify_kd (name,KSET,l,Folder,shufflee=True):
     if shufflee == True:
         shuffle(trainSet)
 
-    m = int(len(trainSet)/l)
+    m = math.ceil(len(trainSet)/L)
     divided_trainSet = []
     for i in range(0,len(trainSet),m):
         divided_trainSet.append(trainSet[i:i+m])
 
     # build the tree 
-    tree_root_list_with_i = []
     k_max_best = [] # in form [[Point_in_i,k_max_best_in_without_i,sum_label],...,]
-    for i in range(l):
-        local_trainSet = [x for j in range(l) for x in divided_trainSet[j] if j != i]
+    for i in range(L):
+        local_trainSet = [x for j in range(L) for x in divided_trainSet[j] if j != i]
         start2 = time.time()
         root_node_without_i     = Kd_Node(local_trainSet) 
         root_node_with_i        = Kd_Node(divided_trainSet[i]) 
@@ -116,31 +130,26 @@ def classify_kd (name,KSET,l,Folder,shufflee=True):
             k_star = k
 
     def f_D_k_result(Point):
-        k_star_best = [] # in form [[Label,Vector,distance_from_Point,i],...,] <- len = k_star
-        for i in range(l):
-            k_star_best_in_i,distance_set_in_i = tree_root_list_with_i[i].search_k_nearst_from_kd_node(Point,k_star)
-            for m in range(k_star):
-                k_star_best.append([k_star_best_in_i[m][0], k_star_best_in_i[m][1], distance_set_in_i[m], i])
-        k_star_best = sorted(k_star_best, key = lambda p: p[2])
-
-        temp_summ = 0
+        k_star_best = k_star_best_find(Point)
         summ = 0
-        for i in range(l):
+        for i in range(L):
             count = 0
+            temp_summ = 0
             for p in k_star_best:
                 if p[3] != i:
                     temp_summ += p[0]
                     count += 1 
-                if count >= k:
+                if count >= k_star:
                     break
             if temp_summ < 0:
                 summ -= 1
             else:
                 summ += 1
+        
         if summ < 0:
             return -1,k_star_best
         else:
                 return 1,k_star_best
 
-    return k_star,f_D_k_result
+    return k_star,f_D_k_result,divided_trainSet
     

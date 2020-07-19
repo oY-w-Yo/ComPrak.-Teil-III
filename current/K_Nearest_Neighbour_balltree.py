@@ -5,6 +5,7 @@ import Assistant_class as AC
 import Assistant_function as AF
 import time
 import copy
+import math
 
 class Ball_Node:
     def __init__(self, Data):
@@ -105,7 +106,7 @@ def classify_ball (name,KSET,l,Folder,shufflee=True):
     if shufflee == True:
         shuffle(trainSet)
 
-    m = int(len(trainSet)/l)
+    m = math.ceil(len(trainSet)/l)
     divided_trainSet = []
     for i in range(0,len(trainSet),m):
         divided_trainSet.append(trainSet[i:i+m])
@@ -154,15 +155,16 @@ def classify_ball (name,KSET,l,Folder,shufflee=True):
         k_star_best = sorted(k_star_best, key = lambda p: p[2])
         #print(Point,k_star_best)
 
-        temp_summ = 0
+        
         summ = 0
         for i in range(l):
             count = 0
+            temp_summ = 0
             for p in k_star_best:
                 if p[3] != i:
                     temp_summ += p[0]
                     count += 1 
-                if count >= k:
+                if count >= k_star:
                     break
             if temp_summ < 0:
                 summ -= 1
@@ -174,5 +176,5 @@ def classify_ball (name,KSET,l,Folder,shufflee=True):
         else:
             return 1,k_star_best
 
-    return [k_star,f_D_k_result]
+    return k_star,f_D_k_result,divided_trainSet
     

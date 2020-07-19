@@ -20,6 +20,7 @@ def distance_max(p1,p2):
             maxi = c
     return maxi
 
+# 1-norm of two pure points
 def distance_max1(p1,p2):
     maxi = 0
     for a,b in zip(p1,p2):
@@ -53,7 +54,7 @@ def farthest_point(p,pSet):
 
 def projection(w,p):
     return sum(w[i]*p[i] for i in range(len(w))) # this function is here to make the code more readable
-
+    
 def point_error(Point,sum_label):
     if sum_label < 0:
         result = -1
@@ -113,3 +114,4 @@ def Test(func,Testset):
             Error_result += 1
     average_Error = float(Error_result/len(Testset))
     return result,average_Error
+

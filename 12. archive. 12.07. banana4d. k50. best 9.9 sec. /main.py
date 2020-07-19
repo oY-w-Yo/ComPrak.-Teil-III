@@ -58,8 +58,8 @@ l = 5
 ######################################################################################################
 #                                          Execution area                                            #
 ######################################################################################################
-#main(name,KSET,l,repeat=1)      # execute once
-main(name,KSET,l,repeat=10,plotting=False)    # execute several times to calculate average properties
+main(name,KSET,l,repeat=1)      # execute once
+#main(name,KSET,l,repeat=10,plotting=False)    # execute several times to calculate average properties
 
 
 

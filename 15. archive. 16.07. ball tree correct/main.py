@@ -56,11 +56,11 @@ def main(data,KSET,l, Methode, repeat=1, plotting = False):
 #                                         Configuration area                                         #
 ######################################################################################################
 
-KSET = range(1,201)
+KSET = range(1,51)
 l = 5
 
 #data = ['bananas-1-2d','classification-artificial/']
-#data = ['bananas-1-4d','classification-artificial/']
+data = ['bananas-1-4d','classification-artificial/']
 #data = ['bananas-5-4d','classification-artificial/']
 #data = ['toy-3d','classification-artificial/']
 #data = ['toy-10d','classification-artificial/']
@@ -68,7 +68,7 @@ l = 5
 
 #data = ['australian','classification-real/']
 #data = ['cod-rna.5000','classification-real/']
-data = ['ijcnn1','classification-real/']
+#data = ['ijcnn1','classification-real/']
 #data = ['ijcnn1.10000','classification-real/']
 #data = ['ijcnn1.5000','classification-real/']
 #data = ['svmguide1','classification-real/']
@@ -77,7 +77,7 @@ data = ['ijcnn1','classification-real/']
 ######################################################################################################
 #                                          Execution area                                            #
 ######################################################################################################
-main(data,KSET,l,"ball",repeat=1)      # execute once
+main(data,KSET,l,"kd",repeat=1)      # execute once
 #main(data,KSET,l,"kd",repeat=3,plotting=False)    # execute several times to calculate average properties
 #print('k_closest_point runs {} times'.format(k_closest_point.count))
 #print('merge_two_k_best runs {} times'.format(merge_two_k_best.count))

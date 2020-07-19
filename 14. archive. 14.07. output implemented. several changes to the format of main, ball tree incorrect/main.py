@@ -76,8 +76,8 @@ data = ['bananas-1-4d','classification-artificial/']
 ######################################################################################################
 #                                          Execution area                                            #
 ######################################################################################################
-#main(data,KSET,l,"kd",repeat=1)      # execute once
-main(data,KSET,l,"kd",repeat=3,plotting=False)    # execute several times to calculate average properties
+main(data,KSET,l,"kd",repeat=1)      # execute once
+#main(data,KSET,l,"kd",repeat=3,plotting=False)    # execute several times to calculate average properties
 #print('k_closest_point runs {} times'.format(k_closest_point.count))
 
 

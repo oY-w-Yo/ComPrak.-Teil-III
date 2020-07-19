@@ -91,7 +91,7 @@ def brute_force(name,KSET,l,Folder):
     
 
 #Test
-#name,Folder  =['ijcnn1.5000','classification-real/']
+name,Folder  =['ijcnn1.5000','classification-real/']
 
 #name,Folder  =['bananas-1-4d','classification-artificial/']
 #name,Folder  =['svmguide1','classification-real/']
@@ -102,7 +102,7 @@ def brute_force(name,KSET,l,Folder):
 #name,Folder  =['bananas-1-2d','classification-artificial/']
 #name,Folder  =['toy-10d','classification-artificial/']
 
-name,Folder  = ['australian','classification-real/']
+#name,Folder  = ['australian','classification-real/']
 #name,Folder  = ['cod-rna.5000','classification-real/']
 
 
@@ -111,8 +111,8 @@ name,Folder  = ['australian','classification-real/']
 start_time = time.time()
 KSET = range(1,2)
 l = 2
-_, f1 = classify_kd (name,KSET,l,Folder,shufflee=False)
-#_, f2 = classify_ball (name,KSET,l,Folder,shufflee=False)
+#_, f1,_ = classify_kd (name,KSET,l,Folder,shufflee=False)
+_, f1,_ = classify_ball (name,KSET,l,Folder,shufflee=False)
 _, f2 = brute_force (name,KSET,l,Folder)
 testSet = read_csv(name,Folder,'test')
 result1,E1 = AF.Test(f1,testSet)
